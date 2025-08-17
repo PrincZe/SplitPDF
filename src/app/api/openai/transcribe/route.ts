@@ -2,9 +2,18 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import OpenAI from "openai";
 
-const openai = new OpenAI();
+let openai: OpenAI;
+try {
+  openai = new OpenAI();
+} catch (error) {
+  console.warn('OpenAI not configured:', error);
+}
 
 export async function POST(req: Request) {
+  if (!openai) {
+    return NextResponse.json({ error: 'OpenAI not configured' }, { status: 500 });
+  }
+
   const body = await req.json();
 
   const base64Audio = body.audio;

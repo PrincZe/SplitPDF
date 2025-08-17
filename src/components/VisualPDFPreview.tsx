@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { ZoomIn, ZoomOut, Grid, CheckSquare, Square, FileText, Eye, ImageIcon } from 'lucide-react';
 
 interface VisualPDFPreviewProps {
@@ -34,12 +35,6 @@ export default function VisualPDFPreview({
     setIsClient(true);
   }, []);
 
-  useEffect(() => {
-    if (isClient) {
-      loadPDFWithThumbnails();
-    }
-  }, [file, isClient]);
-
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -48,7 +43,7 @@ export default function VisualPDFPreview({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const loadPDFWithThumbnails = async () => {
+  const loadPDFWithThumbnails = useCallback(async () => {
     if (!isClient) return;
     
     setIsLoading(true);
@@ -133,7 +128,13 @@ export default function VisualPDFPreview({
       setError(`Failed to load PDF: ${err instanceof Error ? err.message : 'Unknown error'}`);
       setIsLoading(false);
     }
-  };
+  }, [file, isClient, onTotalPagesChange]);
+
+  useEffect(() => {
+    if (isClient) {
+      loadPDFWithThumbnails();
+    }
+  }, [loadPDFWithThumbnails, isClient]);
 
   const handlePageClick = (pageNumber: number) => {
     onPageSelect(pageNumber);
@@ -341,9 +342,11 @@ export default function VisualPDFPreview({
               <div className="p-2">
                 {hasImage ? (
                   <div className="relative">
-                    <img 
+                    <Image 
                       src={pageImages[pageNumber]} 
                       alt={`Page ${pageNumber}`}
+                      width={200}
+                      height={280}
                       className="w-full h-auto rounded border border-gray-200"
                       style={{ 
                         transform: `scale(${pageScale / 0.3})`, 

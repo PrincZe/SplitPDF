@@ -309,7 +309,7 @@ export default function PageGrouping({ totalPages, selectedPages, onGroupsChange
             {groups.length === 0 ? (
               <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded-lg">
                 <Folder className="w-8 h-8 mx-auto mb-2" />
-                <p className="text-sm">Click "Add Group" to create your first group</p>
+                <p className="text-sm">Click &quot;Add Group&quot; to create your first group</p>
               </div>
             ) : (
               <div className="space-y-3 max-h-[600px] overflow-y-auto">
